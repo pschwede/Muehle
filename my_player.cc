@@ -50,7 +50,33 @@ int char2int(char random_character) {
   return umwandlung;
 }
 
-int muehlen_check() {
+char random_piece_of_color(char col) {
+  char pos;
+  int random_integer, gesetzt = 0;
+
+  while (gesetzt == 0) {
+    random_integer = random()%23;
+
+    if(board[random_integer] == '.') {
+      pos = int2char(random_integer);
+      printf("Setze stein auf %c, zuvor war hier ein %c\n", pos, board[random_integer]);
+      gesetzt = 1;
+    }
+  }
+  return pos;
+}
+
+char steinesetzen() {
+  return random_piece_of_color('.');
+}
+
+char killstein() {
+  char enemy_color = int2sym((current_player+1)%2);
+  return random_piece_of_color(enemy_color);
+}
+
+
+int muehlen_check(char* piece_kill) {
   char piece_put = -1;
   char k[4] = "   ";
   for (int i = 0; i<16; i++) {
@@ -58,42 +84,45 @@ int muehlen_check() {
       k[j] = board[char2int(muehlen[i][j])];
     }
     if (current_player == 0) {
-      if (strcmp(k,".11") == 0)
+      if (strcmp(k,".11") == 0) {
         piece_put = muehlen[i][0];
-      else if (strcmp(k,"1.1") == 0)
+      } else if (strcmp(k,"1.1") == 0) {
         piece_put = muehlen[i][1];
-      else if (strcmp(k,"11.") == 0)
+      } else if (strcmp(k,"11.") == 0) {
         piece_put = muehlen[i][2];
-      else if (strcmp(k,".00") == 0)
-            piece_put = muehlen[i][0];
-            piece_kill = killstein();
-      else if (strcmp(k,"0.0") == 0)
-            piece_put = muehlen[i][1];
-            piece_kill = killstein();
-      else if (strcmp(k,"00.") == 0)
-            piece_put = muehlen[i][2];
-            piece_kill = killstein();
-    }
-    else{
-      if (strcmp(k,".00") == 0)
+      } else if (strcmp(k,".00") == 0) {
         piece_put = muehlen[i][0];
-      else if (strcmp(k,"0.0") == 0)
+        *piece_kill = killstein();
+      } else if (strcmp(k,"0.0") == 0) {
         piece_put = muehlen[i][1];
-      else if (strcmp(k,"00.") == 0)
+        *piece_kill = killstein();
+      } else if (strcmp(k,"00.") == 0) {
         piece_put = muehlen[i][2];
-      else if (strcmp(k,".11") == 0)
-          piece_put = muehlen[i][0];
-          piece_kill = killstein();
-      else if (strcmp(k,"1.1") == 0)
-          piece_put = muehlen[i][1];
-          piece_kill = killstein();
-      else if (strcmp(k,"11.") == 0)
-          piece_put = muehlen[i][2];
-          piece_kill = killstein();
+        *piece_kill = killstein();
+      }
+    } else {
+      if (strcmp(k,".00") == 0) {
+        piece_put = muehlen[i][0];
+      } else if (strcmp(k,"0.0") == 0) {
+        piece_put = muehlen[i][1];
+      } else if (strcmp(k,"00.") == 0) {
+        piece_put = muehlen[i][2];
+      } else if (strcmp(k,".11") == 0) {
+        piece_put = muehlen[i][0];
+        *piece_kill = killstein();
+      } else if (strcmp(k,"1.1") == 0) {
+        piece_put = muehlen[i][1];
+        *piece_kill = killstein();
+      } else if (strcmp(k,"11.") == 0) {
+        piece_put = muehlen[i][2];
+        *piece_kill = killstein();
+      }
     }
   }
   if(piece_put >= 0)
     printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
+  if(*piece_kill != ' ')
+    printf("Nehme weg: %c\n", *piece_kill);
 
   return piece_put;
 }
@@ -122,30 +151,6 @@ void steineziehen(char* piece_move, char* piece_put) {
       }
     }
   }
-}
-
-char random_place_of_color(char col) {
-  char pos;
-  int random_integer, gesetzt = 0;
-
-  while (gesetzt == 0) {
-    random_integer = random()%23;
-
-    if(board[random_integer] == '.') {
-      piece_put = int2char(random_integer);
-      printf("Setze stein auf %c, zuvor war hier ein %c\n", pos, board[random_integer]);
-      gesetzt = 1;
-    }
-  }
-  return pos;
-
-char steinesetzen() {
-  return random_piece_of_color('.');
-}
-
-char killstein() {
-  char enemy_color = int2sym((current_player+1)%2);
-  return random_piece_of_color(enemy_color);
 }
 
 int main(void)
@@ -191,14 +196,13 @@ int main(void)
     // Zuerst auf moegliche Muehlen reagieren und ansonsten zufällig Stein setzen
     if(unplaced_pieces[current_player]>0) {
       printf("mache muehlencheck...\n");
-      piece_put = muehlen_check();
+      piece_move = piece_kill = ' ';
+      piece_put = muehlen_check(&piece_kill);
 
       if(piece_put < 0) { // keine Mühle gefunden
         printf("keine Muehle gefunden...setze stein\n");
         piece_put = steinesetzen();
       }
-
-      piece_move = piece_kill = ' ';
     } else {
       //Alle Steine gesetzt...jetzt werden moegliche Wege gesucht
       steineziehen(&piece_move, &piece_put); 

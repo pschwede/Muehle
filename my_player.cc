@@ -56,9 +56,8 @@ char random_piece_of_color(char col) {
     while (gesetzt == 0) {
         random_integer = random()%23;
         
-        if(board[random_integer] == '.') {
+        if(board[random_integer] == col) {
             pos = int2char(random_integer);
-            printf("Setze stein auf %c, zuvor war hier ein %c\n", pos, board[random_integer]);
             gesetzt = 1;
         }
     }
@@ -118,11 +117,13 @@ int muehlen_check(char* piece_kill) {
         *piece_kill = killstein();
       }
     }
+    if(piece_put >= 0) {
+      printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
+      if(*piece_kill != ' ')
+        printf("Nehme weg: %c\n", *piece_kill);
+      break;
+    }
   }
-  if(piece_put >= 0)
-    printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
-  if(*piece_kill != ' ')
-    printf("Nehme weg: %c\n", *piece_kill);
 
   return piece_put;
 }

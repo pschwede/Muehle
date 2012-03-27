@@ -64,6 +64,15 @@ int muehlen_check() {
         piece_put = muehlen[i][1];
       else if (strcmp(k,"11.") == 0)
         piece_put = muehlen[i][2];
+      else if (strcmp(k,".00") == 0)
+            piece_put = muehlen[i][0];
+            //piece_kill=
+      else if (strcmp(k,"0.0") == 0)
+            piece_put = muehlen[i][1];
+            //piece_kill=
+      else if (strcmp(k,"00.") == 0)
+            piece_put = muehlen[i][2];
+            //piece_kill=
     }
     else{
       if (strcmp(k,".00") == 0)
@@ -72,6 +81,15 @@ int muehlen_check() {
         piece_put = muehlen[i][1];
       else if (strcmp(k,"00.") == 0)
         piece_put = muehlen[i][2];
+      else if (strcmp(k,".11") == 0)
+          piece_put = muehlen[i][0];
+        //piece_kill=
+      else if (strcmp(k,"1.1") == 0)
+          piece_put = muehlen[i][1];
+        //piece_kill=
+      else if (strcmp(k,"11.") == 0)
+          piece_put = muehlen[i][2];
+        //piece_kill=
     }
   }
   if(piece_put >= 0)

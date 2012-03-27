@@ -73,6 +73,29 @@ int muehlen_check() {
 }
 
 void steineziehen(char* piece_move, char* piece_put) {
+    int random_integer=random()%23;
+    if(board[random_integer]=='0' && current_player==0){
+        printf("Treffer\n");
+        printf("Current_Player=%u\n", current_player);
+        printf("board[%i]=%c\n", random_integer, board[random_integer]);
+        // durchsuche board nach möglichen zielpositionen
+        for(int i=0;i<32;i++){
+            for (int j=0; j<2; j++) {
+                if(moegliche_wege[i][j] == int2char(random_integer)) {
+                    // möglichen weg gefunden, falls belegung frei ('.')
+                    *piece_move = moegliche_wege[i][(j+1)%2];
+                    printf("Zielposition: %c\n", piece_move);
+                    if(board[*piece_move-65] == '.'){
+                        break;
+                    }
+                }
+            }
+            
+        }
+        
+        
+    }
+
 }
 
 char steinesetzen() {

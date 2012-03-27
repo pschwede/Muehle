@@ -106,8 +106,8 @@ void steineziehen(char* piece_move, char* piece_put) {
   }
 }
 
-char steinesetzen() {
-  char piece_put;
+char random_place_of_color(char col) {
+  char pos;
   int random_integer, gesetzt = 0;
 
   while (gesetzt == 0) {
@@ -115,11 +115,19 @@ char steinesetzen() {
 
     if(board[random_integer] == '.') {
       piece_put = int2char(random_integer);
-      printf("Setze stein auf %c, zuvor war hier ein %c\n", piece_put, board[random_integer]);
+      printf("Setze stein auf %c, zuvor war hier ein %c\n", pos, board[random_integer]);
       gesetzt = 1;
     }
   }
-  return piece_put;
+  return pos;
+
+char steinesetzen() {
+  return random_piece_of_color('.');
+}
+
+char killstein() {
+  char enemy_color = int2sym((current_player+1)%2);
+  return random_piece_of_color(enemy_color);
 }
 
 int main(void)

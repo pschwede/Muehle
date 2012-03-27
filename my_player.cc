@@ -32,6 +32,14 @@ char weggefunden[4];
 
 //Funktionen
 
+char int2sym(int player) {
+  switch(player) {
+    case 0: return '0';
+    case 1: return '1';
+    default: return '.';
+  }
+}
+
 char int2char(int random_integer) {
   char umwandlung = random_integer+65;
   return umwandlung;
@@ -73,28 +81,29 @@ int muehlen_check() {
 }
 
 void steineziehen(char* piece_move, char* piece_put) {
-    int random_integer=random()%23;
-    if(board[random_integer]=='0' && current_player==0){
-        printf("Treffer\n");
-        printf("Current_Player=%u\n", current_player);
-        printf("board[%i]=%c\n", random_integer, board[random_integer]);
-        // durchsuche board nach möglichen zielpositionen
-        for(int i=0;i<32;i++){
-            for (int j=0; j<2; j++) {
-                if(moegliche_wege[i][j] == int2char(random_integer)) {
-                    // möglichen weg gefunden, falls belegung frei ('.')
-                    *piece_move = moegliche_wege[i][(j+1)%2];
-                    printf("Zielposition: %c\n", piece_move);
-                    if(board[*piece_move-65] == '.'){
-                        break;
-                    }
-                }
-            }
-            
+  char from, to;
+  bool no_hit = true;
+
+  while(no_hit) { // solange kein feld vom player besetzt...
+    from = int2char(random()%23);
+    printf("Ich bin Player %c und ich tippe auf... %c\n", int2sym(current_player), from);
+    if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
+      printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
+      // durchsuche board nach möglichen zielpositionen
+      for(int i=0;i<32;i++){
+        for (int j=0; j<2; j++) {
+          to = moegliche_wege[i][(j+1)%2];
+          if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
+            // beweglichen stein und zielposition gefunden
+            *piece_move = from;
+            *piece_put = to;
+            printf("Verschiebe von %c nach %c\n", from, to);
+            no_hit = false;
+          }
         }
-        
-        
+      }
     }
+  }
 }
 
 char steinesetzen() {
@@ -116,7 +125,6 @@ char steinesetzen() {
 int main(void)
 {
   char piece_move, piece_put, piece_kill;
-  int random_integer;
 
   // Unix-Pipes Ã¶ffnen
   /* current game state is delivered via file descriptor 3 */

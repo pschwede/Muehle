@@ -39,6 +39,10 @@ char int2sym(int player) {
     default: return '.';
   }
 }
+char killstein() {
+    char enemy_color = int2sym((current_player+1)%2);
+    return random_piece_of_color(enemy_color);
+}
 
 char int2char(int random_integer) {
   char umwandlung = random_integer+65;
@@ -51,7 +55,7 @@ int char2int(char random_character) {
 }
 
 int muehlen_check() {
-  char piece_put = -1;
+  char piece_put = -1, piece_kill;
   char k[4] = "   ";
   for (int i = 0; i<16; i++) {
     for (int j = 0; j<3; j++) {
@@ -141,11 +145,6 @@ char random_place_of_color(char col) {
 
 char steinesetzen() {
   return random_piece_of_color('.');
-}
-
-char killstein() {
-  char enemy_color = int2sym((current_player+1)%2);
-  return random_piece_of_color(enemy_color);
 }
 
 int main(void)

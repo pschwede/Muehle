@@ -1,0 +1,14 @@
+.example_player.d
+.my_player.d
+Makefile
+example_player
+example_player.c
+example_player.o
+mcp
+mcp.c
+mcp.o
+mcp_state.S
+mcp_state.h
+mcp_state.o
+my_player
+my_player.o

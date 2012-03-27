@@ -73,6 +73,7 @@ int muehlen_check() {
 }
 
 void steineziehen(char* piece_move, char* piece_put) {
+  
 }
 
 char steinesetzen() {

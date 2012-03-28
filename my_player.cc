@@ -71,22 +71,8 @@ char steinesetzen() {
     return random_piece_of_color('.');
 }
 
-char killstein() {
-    char enemy_color = int2sym((current_player+1)%2);
-    char temp_inmuehle = ' ';
-
+char in_muehle(char* muehle, char col){
     char k[4] = "   ";
-
-    for (int i = 0; i<16; i++) {
-        temp_inmuehle=inmuehle(muehlen[i]);
-        if (temp_inmuehle != ' ') {
-            return temp_inmuehle;
-        }
-    }
-    return ' ';
-}
-
-char in_muehle(char* muehle){
     //Gibt zurueck welchen Stein ich wegnehmen kann
     //Gibt Leerzeichen zurueck falls die muehle eine muehle ist
     for (int j = 0; j<3; j++) {
@@ -95,10 +81,23 @@ char in_muehle(char* muehle){
         // dann ist es keine Mühle, und es kann davon ein stein entf. werden
         if( j>0                            // Es liegt mindestens 1 feld vor
            && k[j-1] != k[j]) {           // Der nächste St. untersch. s. vom vorherigen
-            if (k[j-1] == enemy_color)     // Der vorherige stein hat gegn. farbe
+            if (k[j-1] == col)     // Der vorherige stein hat gegn. farbe
                 return k[j-1];
-            else if (k[j] == enemy_color)  // Der akt. stein hat gegn. farbe
+            else if (k[j] == col)  // Der akt. stein hat gegn. farbe
                 return k[j];
+        }
+    }
+    return ' ';
+}
+
+char killstein() {
+    char enemy_color = int2sym((current_player+1)%2);
+    char temp_inmuehle = ' ';
+
+    for (int i = 0; i<16; i++) {
+        temp_inmuehle = in_muehle(muehlen[i], enemy_color);
+        if (temp_inmuehle != ' ') {
+            return temp_inmuehle;
         }
     }
     return ' ';
@@ -120,20 +119,27 @@ char close_piece_of_color(char from, char col) {
 //Wenn er keine Steine mehr hat muss er diese Funktion nehmen anstatt
 //anstatt muehlen_chen()
 
-char schliesse_muehle(char from, char col){
-    //Wenn man eine muehle schließen koennte durch einen move, dann schaue nach ob
-    //der zu bewegende Stein auch in einer geschlossenen Muehle ist
-    char to;
-    for(int i=0;i<32;i++){
-        for (int l=0; l<2; l++) {
-            to = moegliche_wege[i][(j+1)%2];
-            if(moegliche_wege[i][j] == from && board[char2int(to)] == col) {
-                for (int k=0; k<16; k++) {
-                    if(in_muehle(muehlen[k]) == ' ') // muehlen
-                }
+char schliesse_muehle(char to, char col){
+  // finde zu "to" bewegliche steine, die bereits in einer mühle sind
+  for(int i=0;i<32;i++){
+    for (int j=0; j<2; j++) {
+      to = moegliche_wege[i][(j+1)%2];
+      if(moegliche_wege[i][j] == to && board[char2int(to)] == col) {
+        // gefunden: beweglicher stein meiner farbe
+        // ist er bereits in einer mühle? durchsuche dazu alle moeglichen muehlen
+        for(int k=0; k<16; k++) {
+          for(int l=0; l<3; j++) {
+            if(muehlen[k][l] == to) { // stein in einer muehle gefunden
+              if (in_muehle(muehlen[k], col) == ' ') { // stein ist wirklich in einer geschlossenen muehle
+                return to;
+              }
             }
+          }
         }
+      }
     }
+  }
+  return ' ';
 }
 
 int muehlen_move_check(char* piece_move, char* piece_kill){
@@ -141,7 +147,6 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
     char tmp_move = -1;
     char my_color = int2sym(current_player);
     char k[4] = "   ";
-    char to;
     
     // suche nach muehlen
     for (int i = 0; i<16; i++) {
@@ -160,23 +165,22 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                 piece_put = muehlen[i][2];
             } else
             if (strcmp(k,".00") == 0) {
-                piece_put = muehlen[i][0];
+                piece_put = schliesse_muehle(muehlen[i][0], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][0];
                 *piece_kill = killstein();
-                
-                
             } else
             if (strcmp(k,"0.0") == 0) {
-                piece_put = muehlen[i][1];
+                piece_put = schliesse_muehle(muehlen[i][1], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][1];
                 *piece_kill = killstein();
-                
-                
             } else
             if (strcmp(k,"00.") == 0) {
-                piece_put = muehlen[i][2];
+                piece_put = schliesse_muehle(muehlen[i][2], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][2];
                 *piece_kill = killstein();
-                
-                
-                
             }
         } else {
             if (strcmp(k,".00") == 0) {
@@ -189,21 +193,26 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                 piece_put = muehlen[i][2];
             } else
             if (strcmp(k,".11") == 0) {
-                piece_put = muehlen[i][0];
+                piece_put = schliesse_muehle(muehlen[i][0], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][0];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"1.1") == 0) {
-                piece_put = muehlen[i][1];
+                piece_put = schliesse_muehle(muehlen[i][1], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][1];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"11.") == 0) {
-                piece_put = muehlen[i][2];
+                piece_put = schliesse_muehle(muehlen[i][2], my_color);
+                if (piece_put == ' ')
+                    piece_put = muehlen[i][2];
                 *piece_kill = killstein();
             }
         }
         // bewege eigenen stein in die gefundene mühle
         tmp_move = close_piece_of_color(piece_put, my_color);
-        zwickmuehle(piece_put, my_color);
         if(tmp_move < 0) {
           piece_put = -1;
           break;

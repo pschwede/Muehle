@@ -15,11 +15,7 @@ fi
 echo "" > log
 
 i=0;
-<<<<<<< HEAD
-while [[ $i -lt 1000 ]]; do
-=======
 while [[ $i -lt $limit ]]; do
->>>>>>> f03c35764b92fc5b8700c679f42207d8bcb28825
   make fight | tail >> log;
   sleep $delay;
   i=$(($i + 1));

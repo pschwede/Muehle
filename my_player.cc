@@ -70,40 +70,48 @@ char steinesetzen() {
 
 char killstein() {
     char enemy_color = int2sym((current_player+1)%2);
-    bool muehle_neu=false;
-    
+
     char k[4] = "   ";
+
     for (int i = 0; i<16; i++) {
         for (int j = 0; j<3; j++) {
             k[j] = board[char2int(muehlen[i][j])];
-        }
-        if (current_player == 0) {
-            if (strcmp(k,"111") == 1) {
-                muehle_neu=true;
+            // Wenn innerhalb einer mgl. Mühle die Farben ändern,
+            // dann ist es keine Mühle, und es kann davon ein stein entf. werden
+            if( j>0                            // Es liegt mindestens 1 feld vor
+                && k[j-1] != k[j]) {           // Der nächste St. untersch. s. vom vorherigen
+                if (k[j-1] == enemy_color)     // Der vorherige stein hat gegn. farbe
+                    return k[j-1];
+                else if (k[j] == enemy_color)  // Der akt. stein hat gegn. farbe
+                    return k[j];
             }
-            else 
-                return random_piece_of_color(enemy_color);
-        } else {
-            if (strcmp(k,"000") == 0) {
-                muehle_neu=true;
-            }
-            else 
-                return random_piece_of_color(enemy_color);
         }
     }
-    if (muehle_neu==true) {
-        return 0;
+    return ' ';
+}
+
+char close_piece_of_color(char from, char col) {
+  char to;
+  for(int i=0;i<32;i++){
+    for (int j=0; j<2; j++) {
+      to = moegliche_wege[i][(j+1)%2];
+      if(moegliche_wege[i][j] == from && board[char2int(to)] == col) {
+        return to;
+      }
     }
+  }
+  return -1;
 }
 
 //Wenn er keine Steine mehr hat muss er diese Funktion nehmen anstatt
 //anstatt muehlen_chen()
 
-int muehlen_move_check(char* piece_kill, char *piece_move){
-    char piece_put=-1;
-    char from, to;
-    from = int2char(random()%23);
+int muehlen_move_check(char* piece_move, char* piece_kill){
+    char piece_put = -1;
+    char tmp_move = -1;
+    char my_color = int2sym(current_player);
     char k[4] = "   ";
+    // suche nach muehlen
     for (int i = 0; i<16; i++) {
         for (int j = 0; j<3; j++) {
             k[j] = board[char2int(muehlen[i][j])];
@@ -111,111 +119,63 @@ int muehlen_move_check(char* piece_kill, char *piece_move){
         if (current_player == 0) {
             if (strcmp(k,".11") == 0) {
                 piece_put = muehlen[i][0];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
-                printf("piece_put=%c, *piece_put aus der Funktion\n");
-
-                
-            } else if (strcmp(k,"1.1") == 0) {
+            } else
+            if (strcmp(k,"1.1") == 0) {
                 piece_put = muehlen[i][1];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
-                
-            } else if (strcmp(k,"11.") == 0) {
+            } else
+            if (strcmp(k,"11.") == 0) {
                 piece_put = muehlen[i][2];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
-                
-            } else if (strcmp(k,".00") == 0) {
+            } else
+            if (strcmp(k,".00") == 0) {
                 piece_put = muehlen[i][0];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
                 *piece_kill = killstein();
-            } else if (strcmp(k,"0.0") == 0) {
+            } else
+            if (strcmp(k,"0.0") == 0) {
                 piece_put = muehlen[i][1];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
                 *piece_kill = killstein();
-            } else if (strcmp(k,"00.") == 0) {
+            } else
+            if (strcmp(k,"00.") == 0) {
                 piece_put = muehlen[i][2];
-                for(int i=0;i<32;i++){
-                    for (int j=0; j<2; j++) {
-                        to = moegliche_wege[i][(j+1)%2];
-                        if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-                            // beweglichen stein und zielposition gefunden
-                            *piece_move = from;
-                            piece_put = to;
-                        }
-                    }
-                }
                 *piece_kill = killstein();
             }
         } else {
             if (strcmp(k,".00") == 0) {
                 piece_put = muehlen[i][0];
-            } else if (strcmp(k,"0.0") == 0) {
+            } else
+            if (strcmp(k,"0.0") == 0) {
                 piece_put = muehlen[i][1];
-            } else if (strcmp(k,"00.") == 0) {
+            } else
+            if (strcmp(k,"00.") == 0) {
                 piece_put = muehlen[i][2];
-            } else if (strcmp(k,".11") == 0) {
+            } else
+            if (strcmp(k,".11") == 0) {
                 piece_put = muehlen[i][0];
                 *piece_kill = killstein();
-            } else if (strcmp(k,"1.1") == 0) {
+            } else
+            if (strcmp(k,"1.1") == 0) {
                 piece_put = muehlen[i][1];
                 *piece_kill = killstein();
-            } else if (strcmp(k,"11.") == 0) {
+            } else
+            if (strcmp(k,"11.") == 0) {
                 piece_put = muehlen[i][2];
                 *piece_kill = killstein();
             }
         }
-        if(piece_put >= 0) {
+        // bewege eigenen stein in die gefundene mühle
+        tmp_move = close_piece_of_color(piece_put, my_color);
+        if(tmp_move < 0) {
+          piece_put = -1;
+          break;
+        }
+        if(!piece_put < 0) {
             printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
             if(*piece_kill != ' ')
                 printf("Nehme weg: %c\n", *piece_kill);
             break;
         }
-    }
-    
+    } //end for i
+    // Ergebnisse zurückgeben
+    *piece_move = tmp_move;
     return piece_put;
 }
 
@@ -274,7 +234,7 @@ int muehlen_check(char* piece_kill) {
 }
 
 void steineziehen(char* piece_move, char* piece_put) {
-  char from, to;
+  char from;
   bool no_hit = true;
 
   while(no_hit) { // solange kein feld vom player besetzt...
@@ -283,18 +243,11 @@ void steineziehen(char* piece_move, char* piece_put) {
     if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
       printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
       // durchsuche board nach moeglichen zielpositionen
-      for(int i=0;i<32;i++){
-        for (int j=0; j<2; j++) {
-          to = moegliche_wege[i][(j+1)%2];
-          if(moegliche_wege[i][j] == from && board[char2int(to)] == '.') {
-            // beweglichen stein und zielposition gefunden
-            *piece_move = from;
-            *piece_put = to;
-            printf("Verschiebe von %c nach %c\n", from, to);
-            no_hit = false;
-          }
-        }
-      }// versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
+      // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
+      *piece_put = close_piece_of_color(from, '.');
+      *piece_move = from;
+      printf("Verschiebe von %c nach %c\n", *piece_move, *piece_put);
+      no_hit = *piece_put < 0;
     }
   }
 }
@@ -351,10 +304,10 @@ int main(void)
       }
     } else {
       //Alle Steine gesetzt...jetzt werden moegliche Wege gesucht
-      piece_move=muehlen_move_check(&piece_kill,&piece_move);
       piece_kill= ' ';
-      steineziehen(&piece_move, &piece_put); 
-      piece_kill = ' ';
+      piece_put = muehlen_move_check(&piece_move, &piece_kill);
+      if(piece_put < 0)
+        steineziehen(&piece_move, &piece_put); 
     }
     printf("Player %i does '%c%c%c'\n", current_player, piece_move, piece_put, piece_kill);
     //Rueckgabe aller Werte an den MCP

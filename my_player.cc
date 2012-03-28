@@ -236,29 +236,29 @@ int muehlen_check(char* piece_kill) {
   return piece_put;
 }
 
-void steineziehen(char* piece_move, char* piece_put) {
-  char from;
+char steineziehen(char* piece_move) {
+  char from, to=' ';
   bool no_hit = true;
 
   while(no_hit) { // solange kein feld vom player besetzt...
     from = int2char(random()%24);
-      printf("Boardposition ABCDEFGHIJKLMNOPQRSTUVWX\n              ");
-      for(int i = 0; i<24; i++) {
-          printf("%c", board[i]);
-      }
-      
-          printf("\n");
-          printf("Ich bin Player %c und ich tippe auf....... %c\n", int2sym(current_player), from);
-          if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
-              printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
-              // durchsuche board nach moeglichen zielpositionen
-              // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
-              *piece_put = close_piece_of_color(from, '.');
-              *piece_move = from;
-              printf("Verschiebe von %c nach %c\n", *piece_move, *piece_put);
-              no_hit = *piece_put < 0;
-          }
-      }
+    printf("Boardposition ABCDEFGHIJKLMNOPQRSTUVWX\n              ");
+    for(int i = 0; i<24; i++) {
+        printf("%c", board[i]);
+    }
+    printf("\n");
+    printf("Ich bin Player %c und ich tippe auf....... %c\n", int2sym(current_player), from);
+    if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
+        printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
+        // durchsuche board nach moeglichen zielpositionen
+        // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
+        to = close_piece_of_color(from, '.');
+        *piece_move = from;
+        printf("Verschiebe von %c nach %c\n", *piece_move, to);
+        no_hit = to < 0;
+    }
+  }
+  return to;
 }
 
 
@@ -315,7 +315,7 @@ int main(void)
       piece_kill= ' ';
       piece_put = muehlen_move_check(&piece_move, &piece_kill);
       if(piece_put < 0)
-        steineziehen(&piece_move, &piece_put); 
+        piece_put = steineziehen(&piece_move); 
     }
     printf("Player %i does '%c%c%c'\n", current_player, piece_move, piece_put, piece_kill);
     //Rueckgabe aller Werte an den MCP

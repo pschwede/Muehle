@@ -173,9 +173,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][1] && muehlentore[l] != muehlen[i][2])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][0];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             } else
             if (strcmp(k,"0.0") == 0) {
                 schliesse_muehle(muehlen[i][1], my_color, muehlentore);
@@ -183,9 +182,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][2])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][1];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             } else
             if (strcmp(k,"00.") == 0) {
                 schliesse_muehle(muehlen[i][2], my_color, muehlentore);
@@ -193,9 +191,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][1])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][2];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             }
         } else {
             if (strcmp(k,".00") == 0) {
@@ -213,9 +210,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][1] && muehlentore[l] != muehlen[i][2])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][0];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             } else
             if (strcmp(k,"1.1") == 0) {
                 schliesse_muehle(muehlen[i][1], my_color, muehlentore);
@@ -223,9 +219,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][2])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][1];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             } else
             if (strcmp(k,"11.") == 0) {
                 schliesse_muehle(muehlen[i][2], my_color, muehlentore);
@@ -233,9 +228,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                   if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][1])
                     piece_put = muehlentore[l];
                 }
-                if (piece_put == ' ')
-                    piece_put = muehlen[i][2];
-                *piece_kill = killstein();
+                if (piece_put != ' ')
+                  *piece_kill = killstein();
             }
         }
         // bewege eigenen stein in die gefundene mühle

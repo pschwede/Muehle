@@ -73,21 +73,32 @@ char steinesetzen() {
 
 char killstein() {
     char enemy_color = int2sym((current_player+1)%2);
+    char temp_inmuehle = ' ';
 
     char k[4] = "   ";
 
     for (int i = 0; i<16; i++) {
-        for (int j = 0; j<3; j++) {
-            k[j] = board[char2int(muehlen[i][j])];
-            // Wenn innerhalb einer mgl. Mühle die Farben ändern,
-            // dann ist es keine Mühle, und es kann davon ein stein entf. werden
-            if( j>0                            // Es liegt mindestens 1 feld vor
-                && k[j-1] != k[j]) {           // Der nächste St. untersch. s. vom vorherigen
-                if (k[j-1] == enemy_color)     // Der vorherige stein hat gegn. farbe
-                    return k[j-1];
-                else if (k[j] == enemy_color)  // Der akt. stein hat gegn. farbe
-                    return k[j];
-            }
+        temp_inmuehle=inmuehle(muehlen[i]);
+        if (temp_inmuehle != ' ') {
+            return temp_inmuehle;
+        }
+    }
+    return ' ';
+}
+
+char in_muehle(char* muehle){
+    //Gibt zurueck welchen Stein ich wegnehmen kann
+    //Gibt Leerzeichen zurueck falls die muehle eine muehle ist
+    for (int j = 0; j<3; j++) {
+        k[j] = board[char2int(muehle[j])];
+        // Wenn innerhalb einer mgl. Mühle die Farben ändern,
+        // dann ist es keine Mühle, und es kann davon ein stein entf. werden
+        if( j>0                            // Es liegt mindestens 1 feld vor
+           && k[j-1] != k[j]) {           // Der nächste St. untersch. s. vom vorherigen
+            if (k[j-1] == enemy_color)     // Der vorherige stein hat gegn. farbe
+                return k[j-1];
+            else if (k[j] == enemy_color)  // Der akt. stein hat gegn. farbe
+                return k[j];
         }
     }
     return ' ';
@@ -109,11 +120,29 @@ char close_piece_of_color(char from, char col) {
 //Wenn er keine Steine mehr hat muss er diese Funktion nehmen anstatt
 //anstatt muehlen_chen()
 
+char schliesse_muehle(char from, char col){
+    //Wenn man eine muehle schließen koennte durch einen move, dann schaue nach ob
+    //der zu bewegende Stein auch in einer geschlossenen Muehle ist
+    char to;
+    for(int i=0;i<32;i++){
+        for (int l=0; l<2; l++) {
+            to = moegliche_wege[i][(j+1)%2];
+            if(moegliche_wege[i][j] == from && board[char2int(to)] == col) {
+                for (int k=0; k<16; k++) {
+                    if(in_muehle(muehlen[k]) == ' ') // muehlen
+                }
+            }
+        }
+    }
+}
+
 int muehlen_move_check(char* piece_move, char* piece_kill){
     char piece_put = -1;
     char tmp_move = -1;
     char my_color = int2sym(current_player);
     char k[4] = "   ";
+    char to;
+    
     // suche nach muehlen
     for (int i = 0; i<16; i++) {
         for (int j = 0; j<3; j++) {
@@ -122,7 +151,8 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
         if (current_player == 0) {
             if (strcmp(k,".11") == 0) {
                 piece_put = muehlen[i][0];
-            } else
+            } 
+              else
             if (strcmp(k,"1.1") == 0) {
                 piece_put = muehlen[i][1];
             } else
@@ -132,14 +162,21 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
             if (strcmp(k,".00") == 0) {
                 piece_put = muehlen[i][0];
                 *piece_kill = killstein();
+                
+                
             } else
             if (strcmp(k,"0.0") == 0) {
                 piece_put = muehlen[i][1];
                 *piece_kill = killstein();
+                
+                
             } else
             if (strcmp(k,"00.") == 0) {
                 piece_put = muehlen[i][2];
                 *piece_kill = killstein();
+                
+                
+                
             }
         } else {
             if (strcmp(k,".00") == 0) {
@@ -166,11 +203,12 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
         }
         // bewege eigenen stein in die gefundene mühle
         tmp_move = close_piece_of_color(piece_put, my_color);
+        zwickmuehle(piece_put, my_color);
         if(tmp_move < 0) {
           piece_put = -1;
           break;
         }
-        if(!piece_put < 0) {
+        if(piece_put >= 0) {
             printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
             if(*piece_kill != ' ')
                 printf("Nehme weg: %c\n", *piece_kill);

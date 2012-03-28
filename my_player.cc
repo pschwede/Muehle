@@ -322,12 +322,12 @@ char steineziehen(char* piece_move) {
         // durchsuche board nach moeglichen zielpositionen
         // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
         to = close_piece_of_color(from, '.');
-        printf("Verschiebe von %c nach %c\n", *piece_move, to);
+        *piece_move = from;
+        printf("Verschiebe von %c nach %c\n", from, to);
     }
     limit--;
   }
   if(to >= 0) {
-    *piece_move = from;
     return to;
   }
   *piece_move = ' ';

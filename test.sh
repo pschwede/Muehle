@@ -3,10 +3,10 @@
 echo "" > log
 
 i=0;
-while [[ $i -lt 100 ]]; do
+while [[ $i -lt 1000 ]]; do
   make fight | tail >> log;
   sleep 1;
   i=$(($i + 1));
 done
 
-echo "$(grep win log | wc -l) $(grep draw log | wc -l) $(grep invalid log | wc -l)"
+echo "$(grep win log | wc -l) gewonnen $(grep draw log | wc -l) unentschieden$(grep invalid log | wc -l) invalid move"

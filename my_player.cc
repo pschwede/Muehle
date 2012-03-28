@@ -27,9 +27,6 @@ int matches;
 int treffer;
 char weggefunden[4];
 
-//Funktionsaufrufe
-
-
 //Funktionen
 
 char int2sym(int player) {
@@ -54,7 +51,7 @@ char random_piece_of_color(char col) {
     int random_integer, gesetzt = 0;
     
     while (gesetzt == 0) {
-        random_integer = random()%23;
+        random_integer = random()%24;
         
         if(board[random_integer] == col) {
             pos = int2char(random_integer);
@@ -65,6 +62,14 @@ char random_piece_of_color(char col) {
 }
 
 char steinesetzen() {
+    char priority_board[7]={'E','K','N','T','B','Q','W'};
+    char i;
+
+    for (i=0;i<6;i++){
+        if(priority_board[char2int(i)]=='.'){
+            return int2char(i);
+        }
+    }
     return random_piece_of_color('.');
 }
 
@@ -238,19 +243,26 @@ void steineziehen(char* piece_move, char* piece_put) {
   bool no_hit = true;
 
   while(no_hit) { // solange kein feld vom player besetzt...
-    from = int2char(random()%23);
-    printf("Ich bin Player %c und ich tippe auf... %c\n", int2sym(current_player), from);
-    if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
-      printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
-      // durchsuche board nach moeglichen zielpositionen
-      // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
-      *piece_put = close_piece_of_color(from, '.');
-      *piece_move = from;
-      printf("Verschiebe von %c nach %c\n", *piece_move, *piece_put);
-      no_hit = *piece_put < 0;
-    }
-  }
+    from = int2char(random()%24);
+      printf("Boardposition ABCDEFGHIJKLMNOPQRSTUVWX\n              ");
+      for(int i = 0; i<24; i++) {
+          printf("%c", board[i]);
+      }
+      
+          printf("\n");
+          printf("Ich bin Player %c und ich tippe auf....... %c\n", int2sym(current_player), from);
+          if(board[char2int(from)] == int2sym(current_player)) { // feld vom player besetzt
+              printf("Auf %c liegt ein Stein von mir (%c)\n", from, int2sym(current_player));
+              // durchsuche board nach moeglichen zielpositionen
+              // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
+              *piece_put = close_piece_of_color(from, '.');
+              *piece_move = from;
+              printf("Verschiebe von %c nach %c\n", *piece_move, *piece_put);
+              no_hit = *piece_put < 0;
+          }
+      }
 }
+
 
 int main(void)
 {
@@ -270,8 +282,6 @@ int main(void)
 
 
   while(1) { 
-    //Variablen
-
     //Spielzustaende und Board holen
     matches = fscanf(state_input, "%u %u %u%c", &current_player,
         &unplaced_pieces[0], &unplaced_pieces[1], &newline);

@@ -64,7 +64,7 @@ char random_piece_of_color(char col) {
 
 char steinesetzen() {
     for (int i=0;i<12;i++){
-        if(priority_board[i] == '.'){
+        if(board[char2int(priority_board[i])] == '.'){
             return priority_board[i];
         }
     }
@@ -82,9 +82,9 @@ char in_muehle(char* muehle, char col){
         if( j>0                            // Es liegt mindestens 1 feld vor
            && k[j-1] != k[j]) {           // Der nächste St. untersch. s. vom vorherigen
             if (k[j-1] == col)     // Der vorherige stein hat gegn. farbe
-                return k[j-1];
+                return muehle[j-1];
             else if (k[j] == col)  // Der akt. stein hat gegn. farbe
-                return k[j];
+                return muehle[j];
         }
     }
     return ' ';
@@ -219,6 +219,7 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
         }
         if(piece_put >= 0) {
             printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
+
             if(*piece_kill != ' ')
                 printf("Nehme weg: %c\n", *piece_kill);
             break;
@@ -284,10 +285,10 @@ int muehlen_check(char* piece_kill) {
 }
 
 char steineziehen(char* piece_move) {
-  char from, to=' ';
-  bool no_hit = true;
+  char from, to=-1;
+  int limit = 100;
 
-  while(no_hit) { // solange kein feld vom player besetzt...
+  while(to < 0 && limit >= 0) { // solange kein feld vom player besetzt...
     from = int2char(random()%24);
     printf("Boardposition ABCDEFGHIJKLMNOPQRSTUVWX\n              ");
     for(int i = 0; i<24; i++) {
@@ -300,12 +301,16 @@ char steineziehen(char* piece_move) {
         // durchsuche board nach moeglichen zielpositionen
         // versucht eine Mühle auf Zwang zu schließen obwohl da kein Stein liegt
         to = close_piece_of_color(from, '.');
-        *piece_move = from;
         printf("Verschiebe von %c nach %c\n", *piece_move, to);
-        no_hit = to < 0;
     }
+    limit--;
   }
-  return to;
+  if(to >= 0) {
+    *piece_move = from;
+    return to;
+  }
+  *piece_move = ' ';
+  return ' ';
 }
 
 
@@ -349,10 +354,10 @@ int main(void)
 
     // Zuerst auf moegliche Muehlen reagieren und ansonsten zufaellig Stein setzen
     if(unplaced_pieces[current_player]>0) {
-      printf("mache muehlencheck...\n");
       piece_move = piece_kill = ' ';
-      piece_put = muehlen_check(&piece_kill);
 
+      printf("mache muehlencheck...\n");
+      piece_put = muehlen_check(&piece_kill);
       if(piece_put < 0) { // keine Muehle gefunden
         printf("keine Muehle gefunden...setze stein\n");
         piece_put = steinesetzen();

@@ -18,6 +18,7 @@ char moegliche_wege[32][2] = {{'A','B'},{'B','C'},{'C','O'},{'O','X'},
   {'G','H'},{'H','I'},{'I','M'},{'M','R'},{'R','Q'},{'Q','P'},
   {'P','L'},{'L','G'},{'B','E'},{'E','H'},{'M','N'},{'N','O'},
   {'J','K'},{'K','L'},{'Q','T'},{'T','W'}};
+char priority_board[12]={'E','K','N','T','B','Q','W','J','H','M','Q','L'}; // innerer kreuzring bevorzugt!
 char board[24];
 
 unsigned current_player;
@@ -62,12 +63,9 @@ char random_piece_of_color(char col) {
 }
 
 char steinesetzen() {
-    char priority_board[7]={'E','K','N','T','B','Q','W'};
-    char i;
-
-    for (i=0;i<6;i++){
-        if(priority_board[char2int(i)]=='.'){
-            return int2char(i);
+    for (int i=0;i<12;i++){
+        if(priority_board[i] == '.'){
+            return priority_board[i];
         }
     }
     return random_piece_of_color('.');

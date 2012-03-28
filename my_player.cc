@@ -116,22 +116,25 @@ char close_piece_of_color(char from, char col) {
   return -1;
 }
 
-//Wenn er keine Steine mehr hat muss er diese Funktion nehmen anstatt
+//Wenn er keine Steine mehr hat muss er diese Funktion nehmen
 //anstatt muehlen_chen()
+void schliesse_muehle(char to, char col, char *list){
+  char from = ' ';
+  int counter = 0;
 
-char schliesse_muehle(char to, char col){
   // finde zu "to" bewegliche steine, die bereits in einer mühle sind
   for(int i=0;i<32;i++){
     for (int j=0; j<2; j++) {
-      to = moegliche_wege[i][(j+1)%2];
+      from = moegliche_wege[i][(j+1)%2];
       if(moegliche_wege[i][j] == to && board[char2int(to)] == col) {
         // gefunden: beweglicher stein meiner farbe
         // ist er bereits in einer mühle? durchsuche dazu alle moeglichen muehlen
         for(int k=0; k<16; k++) {
           for(int l=0; l<3; j++) {
             if(muehlen[k][l] == to) { // stein in einer muehle gefunden
-              if (in_muehle(muehlen[k], col) == ' ') { // stein ist wirklich in einer geschlossenen muehle
-                return to;
+              if (in_muehle(muehlen[k], col) == ' ') { // stein ist in einer geschlossenen muehle
+                list[counter] = from;
+                counter++;
               }
             }
           }
@@ -139,7 +142,6 @@ char schliesse_muehle(char to, char col){
       }
     }
   }
-  return ' ';
 }
 
 int muehlen_move_check(char* piece_move, char* piece_kill){
@@ -147,6 +149,7 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
     char tmp_move = -1;
     char my_color = int2sym(current_player);
     char k[4] = "   ";
+    char muehlentore[5] = "    ";
     
     // suche nach muehlen
     for (int i = 0; i<16; i++) {
@@ -165,19 +168,31 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                 piece_put = muehlen[i][2];
             } else
             if (strcmp(k,".00") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][0], my_color);
+                schliesse_muehle(muehlen[i][0], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][1] && muehlentore[l] != muehlen[i][2])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][0];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"0.0") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][1], my_color);
+                schliesse_muehle(muehlen[i][1], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][2])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][1];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"00.") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][2], my_color);
+                schliesse_muehle(muehlen[i][2], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][1])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][2];
                 *piece_kill = killstein();
@@ -193,19 +208,31 @@ int muehlen_move_check(char* piece_move, char* piece_kill){
                 piece_put = muehlen[i][2];
             } else
             if (strcmp(k,".11") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][0], my_color);
+                schliesse_muehle(muehlen[i][0], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][1] && muehlentore[l] != muehlen[i][2])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][0];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"1.1") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][1], my_color);
+                schliesse_muehle(muehlen[i][1], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][2])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][1];
                 *piece_kill = killstein();
             } else
             if (strcmp(k,"11.") == 0) {
-                piece_put = schliesse_muehle(muehlen[i][2], my_color);
+                schliesse_muehle(muehlen[i][2], my_color, muehlentore);
+                for(int l=0; l<5; l++) {
+                  if(muehlentore[l] != muehlen[i][0] && muehlentore[l] != muehlen[i][1])
+                    piece_put = muehlentore[l];
+                }
                 if (piece_put == ' ')
                     piece_put = muehlen[i][2];
                 *piece_kill = killstein();

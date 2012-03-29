@@ -72,35 +72,33 @@ char steinesetzen() {
 }
 
 char is_muehle_of_color(char* muehle, char col){
-    char muehlenbelegung[4] = "   ";
     //Gibt zurueck welchen Stein ich wegnehmen kann
+    char muehlenbelegung[4] = "   ";
+    char referenz[4] = "   ";
+
     //Gibt Leerzeichen zurueck falls die muehle eine muehle ist
     for (int j = 0; j<3; j++) {
         muehlenbelegung[j] = board[char2int(muehle[j])];
-        // Wenn innerhalb einer mgl. Mühle die Farben ändern,
-        // dann ist es keine Mühle, und es kann davon ein stein entf. werden
-        if( j>0                            // Es liegt mindestens 1 feld vor
-           && muehlenbelegung[j-1] != muehlenbelegung[j]) {           // Der nächste St. untersch. s. vom vorherigen
-            if (muehlenbelegung[j-1] == col)     // Der vorherige stein hat gegn. farbe
-                return muehle[j-1];
-            else if (muehlenbelegung[j] == col)  // Der akt. stein hat gegn. farbe
-                return muehle[j];
-        }
+        referenz[j] = col;
+    }
+    if(strcmp(muehlenbelegung, referenz) == 0)
+        return ' ';
+
+    // finde stelle, die nicht frei ist und v.d. farbe col ist gebe sie zurueck
+    for (int i=0; i<3; i++) {
+        if(muehlenbelegung[i] == col)
+            return muehle[i];
     }
     return ' ';
 }
 
 char killstein() {
-    char my_color = int2sym(current_player);
+    // durchsucht alle mgl. muehlen und entf. aus unkompletten muehlen
     char enemy_color = int2sym((current_player+1)%2);
     char temp_inmuehle = ' ';
 
     for (int i = 0; i<16; i++) {
         temp_inmuehle = is_muehle_of_color(muehlen[i], enemy_color);
-        if (temp_inmuehle != ' ') {
-            return temp_inmuehle;
-        }
-        temp_inmuehle = is_muehle_of_color(muehlen[i], my_color);
         if (temp_inmuehle != ' ') {
             return temp_inmuehle;
         }

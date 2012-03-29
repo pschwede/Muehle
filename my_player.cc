@@ -28,6 +28,53 @@ int matches;
 int treffer;
 char weggefunden[4];
 
+static char num2sym(char input)
+{
+  switch (input) {
+    case '0':
+      return 'X';
+    case '1':
+      return 'O';
+    case '.':
+      return ' ';
+    default:
+      return input;
+  }
+}
+
+
+int muehlenbrett(){
+
+    printf("\n");
+    printf("Current board situation on the left,\n");
+    printf("letters for identifying the places on the right:\n");
+    printf("\n");
+    printf("%c----------%c----------%c            A----------B----------C\n",
+         num2sym(board[0]), num2sym(board[1]), num2sym(board[2]));
+    printf("|          |          |            |          |          |\n");
+    printf("|   %c------%c------%c   |            |   D------E------F   |\n",
+         num2sym(board[3]), num2sym(board[4]), num2sym(board[5]));
+    printf("|   |      |      |   |            |   |      |      |   |\n");
+    printf("|   |   %c--%c--%c   |   |            |   |   G--H--I   |   |\n",
+         num2sym(board[6]), num2sym(board[7]), num2sym(board[8]));
+    printf("|   |   |     |   |   |            |   |   |     |   |   |\n");
+    printf("%c---%c---%c     %c---%c---%c            J---K---L     M---N---O\n",
+         num2sym(board[9]), num2sym(board[10]), num2sym(board[11]),
+         num2sym(board[12]), num2sym(board[13]), num2sym(board[14]));
+    printf("|   |   |     |   |   |            |   |   |     |   |   |\n");
+    printf("|   |   %c--%c--%c   |   |            |   |   P--Q--R   |   |\n",
+         num2sym(board[15]), num2sym(board[16]), num2sym(board[17]));
+    printf("|   |      |      |   |            |   |      |      |   |\n");
+    printf("|   %c------%c------%c   |            |   S------T------U   |\n",
+         num2sym(board[18]), num2sym(board[19]), num2sym(board[20]));
+    printf("|          |          |            |          |          |\n");
+    printf("%c----------%c----------%c            V----------W----------X\n",
+         num2sym(board[21]), num2sym(board[22]), num2sym(board[23]));
+    printf("\n");
+
+    return 0;
+}
+
 //Funktionen
 
 char int2sym(int player) {
@@ -275,12 +322,7 @@ int main(void)
       fprintf(stderr, "error while reading the board state\n");
       break;
     }
-
-    printf("Boardposition ABCDEFGHIJKLMNOPQRSTUVWX\n              ");
-    for(int i = 0; i<24; i++) {
-      printf("%c", board[i]);
-    }
-    printf("\n");
+    muehlenbrett();
 
     // Zuerst auf moegliche Muehlen reagieren und ansonsten zufaellig Stein setzen
     if(unplaced_pieces[current_player]>0) {

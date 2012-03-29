@@ -91,11 +91,16 @@ char is_muehle_of_color(char* muehle, char col){
 }
 
 char killstein() {
+    char my_color = int2sym(current_player);
     char enemy_color = int2sym((current_player+1)%2);
     char temp_inmuehle = ' ';
 
     for (int i = 0; i<16; i++) {
-        temp_inmuehle=is_muehle_of_color(muehlen[i], enemy_color);
+        temp_inmuehle = is_muehle_of_color(muehlen[i], enemy_color);
+        if (temp_inmuehle != ' ') {
+            return temp_inmuehle;
+        }
+        temp_inmuehle = is_muehle_of_color(muehlen[i], my_color);
         if (temp_inmuehle != ' ') {
             return temp_inmuehle;
         }
@@ -201,9 +206,9 @@ int muehlen_check(char* piece_kill) {
   char piece_put = -1;
   char k[4] = "   ";
 
-  if(check_muehlen(current_player, &piece_put) == 1) {
-      *piece_kill = killstein();
-  }
+    if(check_muehlen(current_player, &piece_put) == 1) {
+        *piece_kill = killstein();
+    }
   if(piece_put >= 0) {
     printf("Muehle gefunden (%c) bei {%c, %c, %c}\n", piece_put, k[0], k[1], k[2]);
     if(*piece_kill != ' ')

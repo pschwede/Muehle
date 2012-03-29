@@ -180,6 +180,14 @@ void close_pieces_of_color(char from, char col, char* list) {
   }
 }
 
+void set_str(char* a, char* b) {
+  int i=0;
+  while(a[i] != '\0' && b[i] != '\0') {
+    b[i] = a[i];
+    i++;
+  }
+}
+
 int check_muehlen(int player, char* piece_put, char* muehle) {
     // gibt 1 zurueck wenn muehle vervollstaendigt werden koennte, sonst 0
     char muehlenbelegung[4] = "   ";
@@ -193,58 +201,58 @@ int check_muehlen(int player, char* piece_put, char* muehle) {
         if (current_player == 0) {
             if (strcmp(muehlenbelegung,".11") == 0) {
                 *piece_put = muehlen[i][0];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } 
               else
             if (strcmp(muehlenbelegung,"1.1") == 0) {
                 *piece_put = muehlen[i][1];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } else
             if (strcmp(muehlenbelegung,"11.") == 0) {
                 *piece_put = muehlen[i][2];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } else
             if (strcmp(muehlenbelegung,".00") == 0) {
                 *piece_put = muehlen[i][0];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             } else
             if (strcmp(muehlenbelegung,"0.0") == 0) {
                 *piece_put = muehlen[i][1];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             } else
             if (strcmp(muehlenbelegung,"00.") == 0) {
                 *piece_put = muehlen[i][2];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             }
         } else {
             if (strcmp(muehlenbelegung,".00") == 0) {
                 *piece_put = muehlen[i][0];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } else
             if (strcmp(muehlenbelegung,"0.0") == 0) {
                 *piece_put = muehlen[i][1];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } else
             if (strcmp(muehlenbelegung,"00.") == 0) {
                 *piece_put = muehlen[i][2];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
             } else
             if (strcmp(muehlenbelegung,".11") == 0) {
                 *piece_put = muehlen[i][0];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             } else
             if (strcmp(muehlenbelegung,"1.1") == 0) {
                 *piece_put = muehlen[i][1];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             } else
             if (strcmp(muehlenbelegung,"11.") == 0) {
                 *piece_put = muehlen[i][2];
-                muehle = muehlen[i];
+                set_str(muehlen[i], muehle);
                 return 1;
             }
         }
@@ -262,12 +270,21 @@ bool is_in_muehle(char pos, char col) {
     return false;
 }
 
-int muehlen_move_check(char* piece_move, char* piece_put, char* piece_kill) {
+bool in_str(char* s, char c) {
+  int i=0;
+  while(s[i]!='\0') {
+    if(s[i] == c)
+      return true;
+    i++;
+  }
+  return false;
+}
+
+int muehlen_move_check(char* piece_move, char* piece_put) {
     // schliesst muehlen durch bewegen
     // gibt 1 zurueck wenn legaler zug mgl., sonst 0
     char tmp_put = ' ';
     char tmp_move = ' ';
-    char tmp_kill = ' ';
     char close_pieces[5] = "    ";
     char my_color = int2sym(current_player);
     char this_muehle[4] = "   ";
@@ -277,18 +294,18 @@ int muehlen_move_check(char* piece_move, char* piece_put, char* piece_kill) {
         close_pieces_of_color(tmp_put, my_color, close_pieces);
         // suche nach steinen, die hineingeschoben werden koennen!
         for(int i=0; i<5; i++) {
-            if(close_pieces[i] == ' ') break;
-            for(int j=0; j<4; j++) {
-              if(close_pieces[i] == this_muehle[j]) break;
-            }
-            tmp_move = close_pieces[i];
+            printf("Close pieces: %s, this_muehle: %s\n", close_pieces, this_muehle);
+            if(close_pieces[i] == ' ') return 0; // muss existieren
+            if(in_str(this_muehle, close_pieces[i])) return 0; // darf nicht in this_muehle sein
+            printf("%c is ok to move\n", close_pieces[i]);
+            tmp_move = close_pieces[i]; // oll korrect
+            break;
         }
     }
     if(tmp_put == ' ' || tmp_move == ' ') return 0;
     // Ergebnisse zurückgeben
     *piece_move = tmp_move;
     *piece_put = tmp_put;
-    *piece_kill = tmp_kill;
     return 1;
 }
 
@@ -381,8 +398,10 @@ int main(void)
     } else {
       //Alle Steine gesetzt...jetzt werden moegliche Wege gesucht
       piece_kill= ' ';
-      if(muehlen_move_check(&piece_move, &piece_put, &piece_kill) == 0)
+      if(muehlen_move_check(&piece_move, &piece_put) == 0)
           piece_put = steineziehen(&piece_move); 
+      else
+          piece_kill = killstein();
     }
     printf("Player %i does '%c%c%c'\n", current_player, piece_move, piece_put, piece_kill);
     //Rueckgabe aller Werte an den MCP

@@ -139,17 +139,26 @@ char is_muehle_of_color(char* muehle, char col){
     return ' ';
 }
 
+bool is_in_muehle(char pos, char col) {
+    for(int i=0; i<16; i++) {
+      for(int j=0; j<3; j++) {
+        if(muehlen[i][j] == pos && board[char2int(pos)] == col)
+          if(is_muehle_of_color(muehlen[i], col) == ' ')
+            return true;
+      }
+    }
+    return false;
+}
+
 char killstein() {
     // durchsucht alle mgl. muehlen und entf. aus unkompletten muehlen
     char enemy_color = int2sym((current_player+1)%2);
-    char temp_inmuehle = ' ';
 
-    for (int i = 0; i<16; i++) {
-        temp_inmuehle = is_muehle_of_color(muehlen[i], enemy_color);
-        if (temp_inmuehle != ' ') {
-            return temp_inmuehle;
-        }
-    }
+    for(int i=0; i<32; i++)
+      if(board[i] == enemy_color && !is_in_muehle(int2char(i), enemy_color)) {
+        printf("Ist ausserhalb gegn. muehle: %c\n", int2char(i));
+        return int2char(i);
+      }
     return ' ';
 }
 
@@ -258,16 +267,6 @@ int check_muehlen(int player, char* piece_put, char* muehle) {
         }
     }
     return 0;
-}
-
-bool is_in_muehle(char pos, char col) {
-    for(int i=0; i<16; i++) {
-      for(int j=0; j<3; j++) {
-        if(muehlen[i][j] == pos && board[char2int(pos)] == col)
-          return is_muehle_of_color(muehlen[i], col) == ' ';
-      }
-    }
-    return false;
 }
 
 bool in_str(char* s, char c) {

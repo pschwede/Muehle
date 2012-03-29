@@ -292,13 +292,14 @@ int muehlen_move_check(char* piece_move, char* piece_put) {
         // moeglicherweise schliessbare muehlen gefunden
         close_pieces_of_color(tmp_put, my_color, close_pieces);
         // suche nach steinen, die hineingeschoben werden koennen!
+        printf("Close pieces: %s, this_muehle: %s\n", close_pieces, this_muehle);
         for(int i=0; i<5; i++) {
-            printf("Close pieces: %s, this_muehle: %s\n", close_pieces, this_muehle);
             if(close_pieces[i] == ' ') return 0; // muss existieren
-            if(in_str(this_muehle, close_pieces[i])) return 0; // darf nicht in this_muehle sein
-            printf("%c is ok to move\n", close_pieces[i]);
-            tmp_move = close_pieces[i]; // oll korrect
-            break;
+            if(!in_str(this_muehle, close_pieces[i])) {// darf nicht in this_muehle sein
+              printf("%c is ok to move\n", close_pieces[i]);
+              tmp_move = close_pieces[i]; // oll korrect
+              break;
+            }
         }
     }
     if(tmp_put == ' ' || tmp_move == ' ') return 0;
